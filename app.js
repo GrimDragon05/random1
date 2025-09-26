@@ -17,21 +17,34 @@ async function fetchAllItems() {
       const resp = await fetch(`${BASE_URL}/search?page=${page}&per_page=100`, {
         headers: { 'Authorization': `Bearer ${API_KEY}` }
       });
-      if (!resp.ok) break;
+      if (!resp.ok) {
+        console.error("Item API response not ok:", resp.status, resp.statusText);
+        break;
+      }
       const data = await resp.json();
-      if (data.items) items = items.concat(data.items);
+      if (data.items) {
+        items = items.concat(data.items);
+      } else {
+        console.error("No items field in API response:", data);
+      }
       lastPage = data.pagination?.last_page || 1;
       page++;
     } while (page <= lastPage);
   } catch (e) {
-    // ignore
+    console.error("Error fetching all items:", e);
+    alert("Error fetching items from IdleMMO API. Please check your connection or API key.");
   }
   return items;
 }
 
 async function ensureAllItemsLoaded() {
   if (allItems.length === 0) {
+    document.getElementById('itemSelectDiv').innerHTML = '<span>Loading items...</span>';
     allItems = await fetchAllItems();
+    if (allItems.length === 0) {
+      document.getElementById('itemSelectDiv').innerHTML = '<span style="color:#ff5555">Could not load any items from API!</span>';
+      return;
+    }
     fuse = new Fuse(allItems, {
       keys: ['name'],
       threshold: 0.4,
@@ -48,6 +61,7 @@ async function searchItem() {
   document.getElementById('calcDiv').style.display = 'none';
   document.getElementById('result').innerHTML = '';
   await ensureAllItemsLoaded();
+  if (!fuse) return;
   let results = fuse.search(name, { limit: 10 });
   if (results.length === 0) {
     document.getElementById('itemSelectDiv').innerHTML = '<span>No items found.</span>';
@@ -85,13 +99,19 @@ function showItemImage(item) {
   if (item && item.image_url) {
     imgHtml = `<img class="item-image" src="${item.image_url}" alt="${item.name}" />`;
   }
-  document.getElementById('itemSelectDiv').innerHTML += imgHtml;
+  // To prevent image stacking, use a container div for the image and set its innerHTML
+  let imgDiv = document.getElementById('itemImageDiv');
+  if (!imgDiv) {
+    imgDiv = document.createElement('div');
+    imgDiv.id = 'itemImageDiv';
+    document.getElementById('itemSelectDiv').appendChild(imgDiv);
+  }
+  imgDiv.innerHTML = imgHtml;
 }
 
 function formatGold(n) {
   return n.toLocaleString('en-US');
 }
-
 
 function calculate() {
   if (!selectedItem || !hashedId) return;
@@ -133,7 +153,8 @@ function calculate() {
           `<div class='result-col'>${marketHtml}</div>`;
       }
     })
-    .catch(() => {
+    .catch((e) => {
+      console.error("Error fetching market data:", e);
       document.getElementById('result').innerHTML = '<span style="color:#ff5555">Error fetching market data.</span>';
     });
 }
