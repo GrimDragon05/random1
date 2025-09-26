@@ -1,4 +1,17 @@
-// Your existing code here with the API key replaced
-const apiKey = 'idlemmo_gq4xkenyPb6mIQyMtMU5hhabXw3iovlnjiTRZGY1HQvGUL1G';
+// Updated content for app.js
 
-// ... rest of the app.js code ...
+// Function to compare market and vendor prices
+function comparePrices(marketPrice, vendorPrice) {
+    if (marketPrice < vendorPrice) {
+        console.log('Market price is lower than vendor price.');
+    } else if (marketPrice > vendorPrice) {
+        console.log('Vendor price is lower than market price.');
+    } else {
+        console.log('Market price is equal to vendor price.');
+    }
+}
+
+// Example usage
+comparePrices(100, 120);
+comparePrices(150, 100);
+comparePrices(200, 200);
