@@ -59,8 +59,15 @@ button:hover {
 	background: linear-gradient(90deg, #ffb300 60%, #ffd700 100%);
 	color: #111;
 }
+/* Side-by-side comparison */
 #result {
 	margin-top: 28px;
+	display: flex;
+	gap: 18px;
+	justify-content: center;
+}
+.result-col {
+	flex: 1 1 0;
 	background: #222;
 	border-radius: 8px;
 	padding: 18px 14px;
@@ -68,6 +75,20 @@ button:hover {
 	font-size: 1.08rem;
 	box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 	word-break: break-word;
+	min-width: 0;
+}
+.result-col h2 {
+	color: #ffd700;
+	font-size: 1.15rem;
+	margin: 0 0 10px 0;
+	text-align: center;
+	letter-spacing: 0.5px;
+}
+.result-diff {
+	margin-top: 18px;
+	text-align: center;
+	font-size: 1.13rem;
+	font-weight: bold;
 }
 select {
 	width: 100%;
@@ -92,3 +113,5 @@ select:focus {
 	background: #333;
 	box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
+
+
